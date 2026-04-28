@@ -41,7 +41,7 @@ func newServer(logger *zap.Logger) (*gin.Engine){
 
 // Start server
 func startServer(server *gin.Engine, logger *zap.Logger) {
-	port := config.GetEnv("PORT", "8081")
+	port := config.GetEnv("PORT", "8000")
 	
 	srv := &http.Server{
 		Addr: ":" + port,
