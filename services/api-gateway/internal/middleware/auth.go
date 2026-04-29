@@ -20,7 +20,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		// Fallback: Authorization header
 		if tokenString == "" {
 			authHeader := c.GetHeader("Authorization")
-			if len(authHeader) > 7 && strings.HasPrefix(authHeader, "Bearer ") {
+			if strings.HasPrefix(authHeader, "Bearer ") {
 				tokenString = strings.TrimPrefix(authHeader, "Bearer ")
 			}
 		}
@@ -63,6 +63,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("user_id", claims.Subject)
+
 		c.Next()
 	}
 }

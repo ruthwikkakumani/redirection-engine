@@ -10,7 +10,8 @@ import (
 	"github.com/ruthwikkakumani/url-shortener/services/api-gateway/internal/middleware"
 	"go.uber.org/zap"
 )
-func newProxy(target string, logger *zap.Logger) (*httputil.ReverseProxy){
+
+func newProxy(target string, logger *zap.Logger) *httputil.ReverseProxy {
 	u, err := url.Parse(target)
 	if err != nil {
 		logger.Fatal("invalid proxy target", zap.String("target", target))
@@ -18,26 +19,36 @@ func newProxy(target string, logger *zap.Logger) (*httputil.ReverseProxy){
 	return httputil.NewSingleHostReverseProxy(u)
 }
 
-func proxyHandler(proxy *httputil.ReverseProxy, prefix string) (gin.HandlerFunc) {
+func proxyHandler(proxy *httputil.ReverseProxy, prefix string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := strings.TrimPrefix(c.Request.URL.Path, prefix)
 		if path == "" {
 			path = "/"
 		}
-		
+
 		c.Request.URL.Path = path
 		c.Request.URL.RawPath = path
+
+		userID := c.GetString("user_id")
+		if userID != "" {
+			c.Request.Header.Set("X-User-ID", userID)
+		}
 		
+		authHeader := c.GetHeader("Authorization")
+		if authHeader != "" {
+			c.Request.Header.Set("Authorization", authHeader)
+		}
+
 		clientIP := c.ClientIP()
 		if prior := c.Request.Header.Get("X-Forwarded-For"); prior != "" {
 			clientIP = prior + ", " + clientIP
 		}
 		c.Request.Header.Set("X-Forwarded-For", clientIP)
-		
+
 		c.Request.Header.Set("X-Gateway", "go-api-gateway")
-		
+
 		proxy.ServeHTTP(c.Writer, c.Request)
-	} 
+	}
 }
 
 func RegisterRoutes(r *gin.Engine, logger *zap.Logger) {

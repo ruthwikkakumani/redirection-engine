@@ -29,23 +29,12 @@ func NewUrlHandler(logger *zap.Logger, service *service.UrlService) (*UrlHandler
 
 func (h *UrlHandler) ShortenURL(c *gin.Context){
 	
-	userIdRaw, exists := c.Get("user_id")
-	if !exists {
+	userId := c.GetHeader("X-User-ID")
+	if userId == "" {
 		h.logger.Error("user not authenticated")
-		
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error" : "user not authenticated",
-		})
-		
-		return
-	}
-	
-	userId, ok := userIdRaw.(string)
-	if !ok {
-		h.logger.Error("invalid user_id type")
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "invalid user context",
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "user not authenticated",
 		})
 		return
 	}
