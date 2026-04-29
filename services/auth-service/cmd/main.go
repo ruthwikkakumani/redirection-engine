@@ -43,7 +43,7 @@ func newServer(logger *zap.Logger, pool *pgxpool.Pool) (*gin.Engine) {
 
 
 func startServer(server *gin.Engine, logger *zap.Logger) {
-	port := config.GetEnv("PORT", "8080")
+	port := config.GetEnv("PORT", "8081")
 	
 	srv := &http.Server{
 		Addr: ":" + port,
