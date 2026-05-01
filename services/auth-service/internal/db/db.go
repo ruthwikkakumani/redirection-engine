@@ -46,7 +46,7 @@ func (db *DBService) InitDB(ctx context.Context) (error) {
 	}
 	
 	// pool tuning
-	cnfg.MaxConns = 20
+	cnfg.MaxConns = 10
 	cnfg.MinConns = 2
 	cnfg.MaxConnLifetime = time.Hour
 	cnfg.MaxConnIdleTime = 30 * time.Minute
