@@ -74,6 +74,7 @@ func RegisterRoutes(r *gin.Engine, logger *zap.Logger) {
 	urls := r.Group("/api/url")
 	urls.Use(middleware.AuthMiddleware())
 	{
+		urls.Any("", proxyHandler(urlProxy, "/api/url"))
 		urls.Any("/*path", proxyHandler(urlProxy, "/api/url"))
 	}
 }
