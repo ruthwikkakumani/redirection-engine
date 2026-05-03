@@ -41,18 +41,16 @@ func (s *UrlService) GetOriginalURL(ctx context.Context, code string) (string, e
 	key := "url:" + code
 	val, err := client.Get(ctx, key).Result()
 	if err == nil {
-		s.logger.Info("cache hit", zap.String("code", code))
 		return val, nil
 	}
 
-	if err == redis.Nil {
-		s.logger.Info("cache miss", zap.String("code", code))
-	}else {
-		s.logger.Warn("redis error",
-			zap.String("code", code),
-			zap.Error(err),
-		)
-	}
+	if err != redis.Nil {
+	    s.logger.Warn("redis error",
+	        zap.String("code", code),
+	        zap.Error(err),
+	    )
+    }
+
 
 	url, err := s.repo.GetOriginalURL(code)
 	if err != nil {
