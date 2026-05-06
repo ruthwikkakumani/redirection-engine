@@ -111,7 +111,7 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 
 	code := c.Param("shortCode")
 
-	code, err := h.service.UpdateOriginalURL(userId, req.OriginalURL, code, req.ExpiryMinutes)
+	code, err := h.service.UpdateURL(userId, req.OriginalURL, code, req.ExpiryMinutes)
 	if err != nil {
 		h.logger.Error("failed to update url", zap.Error(err))
 
@@ -132,5 +132,52 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"short_url": base + "/r/" + code,
+	})
+}
+
+
+func (h *UrlHandler) DeleteURL(c *gin.Context) {
+
+	userId := c.GetHeader("X-User-ID")
+	if userId == "" {
+		h.logger.Error("user not authenticated")
+
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "user not authenticated",
+		})
+		return
+	}
+
+	code := c.Param("shortCode")
+
+	if code == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error" : "invalid request",
+		})
+		return
+	}
+
+	err := h.service.DeleteURL(userId, code)
+	if err != nil {
+		h.logger.Error("failed to delete url",
+			zap.Error(err),
+		)
+
+		if err.Error() == "url not found" {
+		    c.JSON(http.StatusNotFound, gin.H{
+		        "error": "url not found",
+		    })
+		    return
+    	}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error" : "internal server error",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "url deleted successfully",
 	})
 }

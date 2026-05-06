@@ -58,8 +58,6 @@ func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, exp
 		argPos++
 	}
 
-
-
 	if expiresAt != nil {
 		setClauses = append(
 			setClauses,
@@ -93,6 +91,25 @@ func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, exp
 		args...,
 	)
 
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return errors.New("url not found")
+	}
+
+	return nil
+}
+
+func (r *UrlRepo) DeleteURL(userID string, shortCode string) (error) {
+	query := `
+		DELETE FROM urls
+		WHERE user_id = $1
+	  	AND short_code = $2;
+	`
+
+	result, err := r.db.Exec(context.Background(), query, userID, shortCode)
 	if err != nil {
 		return err
 	}

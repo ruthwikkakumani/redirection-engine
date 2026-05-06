@@ -68,7 +68,7 @@ func (s *UrlService) generateUniqueShortCode() (string, error) {
 	}
 }
 
-func (s *UrlService) UpdateOriginalURL(userId string, originalURL *string, code string, expiryMinutes *int) (string, error) {
+func (s *UrlService) UpdateURL(userId string, originalURL *string, code string, expiryMinutes *int) (string, error) {
 	
 	var expiresAt *time.Time
 	if expiryMinutes != nil {
@@ -85,4 +85,17 @@ func (s *UrlService) UpdateOriginalURL(userId string, originalURL *string, code 
 	}
 
 	return code, nil
+}
+
+func (s *UrlService) DeleteURL(userId string, shortCode string) (error) {
+
+	if err := s.repo.DeleteURL(userId, shortCode); err != nil {
+		s.logger.Error("unable to delete data in db",
+			zap.Error(err),
+		)
+
+		return err
+	}
+
+	return nil
 }
