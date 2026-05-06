@@ -34,15 +34,7 @@ func NewUrlHandler(logger *zap.Logger, service *service.UrlService) *UrlHandler 
 
 func (h *UrlHandler) ShortenURL(c *gin.Context) {
 
-	userId := c.GetHeader("X-User-ID")
-	if userId == "" {
-		h.logger.Error("user not authenticated")
-
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "user not authenticated",
-		})
-		return
-	}
+	userId := c.GetString("userID")
 
 	var req ShortenURLRequest
 
@@ -69,23 +61,36 @@ func (h *UrlHandler) ShortenURL(c *gin.Context) {
 
 	base := config.GetEnv("BASE_URL", "http://localhost:8082")
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"short_url": base + "/r/" + code,
 	})
 
 }
 
-func (h *UrlHandler) UpdateURL(c *gin.Context) {
+func (h *UrlHandler) ListURLS(c *gin.Context) {
 
-	userId := c.GetHeader("X-User-ID")
-	if userId == "" {
-		h.logger.Error("user not authenticated")
+	userId := c.GetString("userID")
 
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "user not authenticated",
+	urls, err := h.service.ListURLS(userId)
+	if err != nil {
+		h.logger.Error("unable to process request",
+			zap.Error(err),
+		)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error" : "internal server error",
 		})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data" : urls,
+	})
+}
+
+func (h *UrlHandler) UpdateURL(c *gin.Context) {
+
+	userId := c.GetString("userID")
 
 	var req UpdateURLRequest
 
@@ -138,15 +143,7 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 
 func (h *UrlHandler) DeleteURL(c *gin.Context) {
 
-	userId := c.GetHeader("X-User-ID")
-	if userId == "" {
-		h.logger.Error("user not authenticated")
-
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "user not authenticated",
-		})
-		return
-	}
+	userId := c.GetString("userID")
 
 	code := c.Param("shortCode")
 

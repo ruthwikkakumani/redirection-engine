@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/model"
 	"go.uber.org/zap"
 )
 
@@ -40,6 +41,46 @@ func (r *UrlRepo) CreateURL(userID, originalURL, code string, expiresAt *time.Ti
 
 	_, err := r.db.Exec(context.Background(), query, userID, originalURL, code, expiresAt)
 	return err
+}
+
+func (r *UrlRepo) ListURLS(userID string) ([]model.Url, error) {
+
+	query := `
+		SELECT short_code, original_url, created_at, expires_at  FROM urls
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+	` 
+
+	var urls []model.Url
+	
+	rows, err := r.db.Query(context.Background(), query, userID)
+	if err != nil {
+		return urls, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var url model.Url
+
+		err := rows.Scan(
+			&url.ShortCode,
+			&url.OriginalURL,
+			&url.CreatedAt,
+			&url.ExpiresAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		urls = append(urls, url)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return urls, nil
 }
 
 func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, expiresAt *time.Time) (error) {

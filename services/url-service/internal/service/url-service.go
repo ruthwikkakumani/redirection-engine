@@ -3,6 +3,7 @@ package service
 import (
 	"time"
 
+	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/model"
 	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/repository"
 	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/utils"
 	"go.uber.org/zap"
@@ -66,6 +67,20 @@ func (s *UrlService) generateUniqueShortCode() (string, error) {
 			return code, nil
 		}
 	}
+}
+
+func (s *UrlService) ListURLS(userId string) ([]model.Url, error) {
+
+	urls, err := s.repo.ListURLS(userId)
+	if err != nil {
+		s.logger.Error("unable to get data from db",
+			zap.Error(err),
+		)
+
+		return nil, err
+	}
+
+	return urls, nil
 }
 
 func (s *UrlService) UpdateURL(userId string, originalURL *string, code string, expiryMinutes *int) (string, error) {
