@@ -7,17 +7,18 @@ import (
 	"go.uber.org/zap"
 )
 
-func ZapMiddleware(logger *zap.Logger)(gin.HandlerFunc){
-	return func(c *gin.Context){
+func ZapMiddleware(logger *zap.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		start := time.Now()
-		
+
 		c.Next()
-		
+
 		duration := time.Since(start)
 		status := c.Writer.Status()
 
-		// Only log if the request actually failed (400s and 500s)
-		if status >= 400 {
+		// Only log actual server failures (500s).
+		// We ignore 4xx (like 404 or 429) to prevent Railway log rate-limits during high load.
+		if status >= 500 {
 			logger.Error("request failed",
 				zap.String("method", c.Request.Method),
 				zap.String("path", c.Request.URL.Path),
@@ -27,7 +28,7 @@ func ZapMiddleware(logger *zap.Logger)(gin.HandlerFunc){
 			)
 		}
 
-		/* 
+		/*
 			logger.Info("incoming request",
 				zap.String("method", c.Request.Method),
 				zap.String("path", c.Request.URL.Path),
