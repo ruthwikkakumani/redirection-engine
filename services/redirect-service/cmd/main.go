@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/cache"
 	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/config"
 	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/db"
+	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/kafka"
 	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/middleware"
 	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/routes"
 	"go.uber.org/zap"
@@ -28,13 +30,13 @@ func LoadEnv() {
 	}
 }
 
-func newServer(logger *zap.Logger, pool *pgxpool.Pool, redisClient *cache.RedisClient) (*gin.Engine){
+func newServer(logger *zap.Logger, pool *pgxpool.Pool, redisClient *cache.RedisClient, producer *kafka.Producer) *gin.Engine {
 	server := gin.New()
 
 	server.Use(gin.Recovery())
 	server.Use(middleware.ZapMiddleware(logger))
 
-	routes.RegisterRoutes(server, logger, pool, redisClient)
+	routes.RegisterRoutes(server, logger, pool, redisClient, producer)
 
 	return server
 }
@@ -45,9 +47,9 @@ func startServer(server *gin.Engine, logger *zap.Logger) {
 	srv := &http.Server{
 		Addr:         ":" + port,
 		Handler:      server,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  10 * time.Second,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
 
 	go func() {
@@ -100,13 +102,13 @@ func main() {
 
 	// Initialize Redis
 	redisClient := cache.NewRedisClient(logger)
-	
+
 	if err := redisClient.Init(context.Background()); err != nil {
-			logger.Fatal("failed to initialize redis",
-				zap.Error(err),
-			)
+		logger.Fatal("failed to initialize redis",
+			zap.Error(err),
+		)
 	}
-	
+
 	defer redisClient.Close()
 
 	// Initialize DB
@@ -117,7 +119,7 @@ func main() {
 		)
 	}
 	defer dbService.Close()
-	
+
 	pool, err := dbService.GetPool()
 	if err != nil {
 		logger.Error("db not initialized",
@@ -125,8 +127,25 @@ func main() {
 		)
 	}
 
+	// Initialize Kafka Producer (optional — degrades gracefully if not configured)
+	var producer *kafka.Producer
+	kafkaBrokers := config.GetEnv("KAFKA_BROKERS", "")
+	if kafkaBrokers != "" {
+		brokers := strings.Split(kafkaBrokers, ",")
+		producer, err = kafka.NewProducer(brokers, logger)
+		if err != nil {
+			logger.Warn("kafka: failed to init producer (" + err.Error() + ") — analytics disabled")
+			producer = nil
+		} else {
+			defer producer.Close()
+			logger.Info("kafka: producer initialised", zap.Strings("brokers", brokers))
+		}
+	} else {
+		logger.Warn("KAFKA_BROKERS not set — analytics events will not be published")
+	}
+
 	// server setup
-	server := newServer(logger, pool, redisClient)
+	server := newServer(logger, pool, redisClient, producer)
 
 	// start server
 	startServer(server, logger)
