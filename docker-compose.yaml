@@ -90,6 +90,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - BASE_URL=${BASE_URL}
       - DB_CONN=${DB_CONN_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - REDIS_ADDR=${REDIS_ADDR}
     depends_on:
       - redis
@@ -104,6 +106,8 @@ services:
       - ENV=${ENV}
       - PORT=${REDIRECT_PORT}
       - DB_CONN=${DB_CONN_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - REDIS_ADDR=${REDIS_ADDR}
       - KAFKA_BROKERS=kafka:9092
     depends_on:

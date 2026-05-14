@@ -25,6 +25,15 @@ func NewUrlHandler(logger *zap.Logger, svc *service.UrlService, producer *kafka.
 	}
 }
 
+// RedirectURL godoc
+// @Summary Redirect to original URL
+// @Description Fetch the original URL for a given short code and redirect the user
+// @Tags Redirect
+// @Param code path string true "Short Code"
+// @Success 302 {string} string "Redirect"
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /{code} [get]
 func (h *UrlHandler) RedirectURL(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {

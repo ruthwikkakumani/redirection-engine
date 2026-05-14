@@ -1,0 +1,38 @@
+info:
+  contact: {}
+  description: Internal service for high-throughput URL redirection and click event
+    publishing.
+  title: Redirect Service API
+  version: "1.0"
+paths:
+  /{code}:
+    get:
+      description: Fetch the original URL for a given short code and redirect the
+        user
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Redirect to original URL
+      tags:
+      - Redirect
+swagger: "2.0"

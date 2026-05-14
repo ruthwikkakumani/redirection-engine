@@ -1,0 +1,188 @@
+definitions:
+  handler.ShortenURLRequest:
+    properties:
+      custom_code:
+        maxLength: 20
+        minLength: 3
+        type: string
+      expiry_minutes:
+        maximum: 43200
+        minimum: 1
+        type: integer
+      original_url:
+        type: string
+    required:
+    - original_url
+    type: object
+  handler.UpdateURLRequest:
+    properties:
+      custom_code:
+        maxLength: 20
+        minLength: 3
+        type: string
+      expiry_minutes:
+        maximum: 43200
+        minimum: 1
+        type: integer
+      original_url:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Internal service for URL shortening and lifecycle management.
+  title: URL Service API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Get all URLs created by the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all URLs
+      tags:
+      - URL
+    post:
+      consumes:
+      - application/json
+      description: Shorten a long URL with optional custom code and expiry
+      parameters:
+      - description: URL details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ShortenURLRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a short URL
+      tags:
+      - URL
+  /{shortCode}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing short URL by its code
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a short URL
+      tags:
+      - URL
+    put:
+      consumes:
+      - application/json
+      description: Update the original URL or expiry of an existing short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: shortCode
+        required: true
+        type: string
+      - description: Update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateURLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a short URL
+      tags:
+      - URL
+swagger: "2.0"

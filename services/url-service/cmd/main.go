@@ -21,6 +21,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title URL Service API
+// @version 1.0
+// @description Internal service for URL shortening and lifecycle management.
+
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {

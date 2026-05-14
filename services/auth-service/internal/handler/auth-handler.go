@@ -42,7 +42,17 @@ func NewAuthHandler(logger *zap.Logger, authService *service.AuthService) (*Auth
 	}
 }
 
-// Register handler
+// RegisterHandler godoc
+// @Summary Register a new user
+// @Description Create a new user account
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body registerReq true "Registration details"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Router /register [post]
 func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 	
 	var req registerReq
@@ -82,7 +92,17 @@ func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 	})
 }
 
-// Login Handler
+// LoginHandler godoc
+// @Summary Login a user
+// @Description Authenticate user and return token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body loginReq true "Login credentials"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /login [post]
 func (h *AuthHandler) LoginHandler(c *gin.Context) {
 	
 	var req loginReq
@@ -131,7 +151,16 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 	})
 }
 
-// Forgot Password Handler
+// ForgotPasswordHandler godoc
+// @Summary Request password reset
+// @Description Send a reset token to the user's email
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body forgotPasswordReq true "Email for reset"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /forgot-password [post]
 func (h *AuthHandler) ForgotPasswordHandler(c *gin.Context) {
 	var req forgotPasswordReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -148,7 +177,16 @@ func (h *AuthHandler) ForgotPasswordHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "If the email exists, a reset token has been generated"})
 }
 
-// Reset Password Handler
+// ResetPasswordHandler godoc
+// @Summary Reset user password
+// @Description Reset password using a valid token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body resetPasswordReq true "New password details"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /reset-password [post]
 func (h *AuthHandler) ResetPasswordHandler(c *gin.Context) {
 	var req resetPasswordReq
 	if err := c.ShouldBindJSON(&req); err != nil {

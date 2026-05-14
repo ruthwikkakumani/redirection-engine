@@ -20,6 +20,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Auth Service API
+// @version 1.0
+// @description Internal Auth service for user management and JWT issuance.
+
 // Load .env
 func LoadEnv() {
 	err := godotenv.Load()

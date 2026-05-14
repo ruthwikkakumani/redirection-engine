@@ -23,6 +23,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Redirect Service API
+// @version 1.0
+// @description Internal service for high-throughput URL redirection and click event publishing.
+
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {

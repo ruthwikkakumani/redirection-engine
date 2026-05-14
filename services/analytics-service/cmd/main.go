@@ -22,6 +22,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Analytics Service API
+// @version 1.0
+// @description Internal service for tracking and aggregating URL click telemetry.
+
 func LoadEnv() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env found, using system environment")

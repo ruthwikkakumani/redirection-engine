@@ -33,6 +33,18 @@ func NewUrlHandler(logger *zap.Logger, service *service.UrlService) *UrlHandler 
 	}
 }
 
+// ShortenURL godoc
+// @Summary Create a short URL
+// @Description Shorten a long URL with optional custom code and expiry
+// @Tags URL
+// @Accept json
+// @Produce json
+// @Param request body ShortenURLRequest true "URL details"
+// @Success 201 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router / [post]
 func (h *UrlHandler) ShortenURL(c *gin.Context) {
 
 	userId := c.GetString("userID")
@@ -80,6 +92,16 @@ func (h *UrlHandler) ShortenURL(c *gin.Context) {
 
 }
 
+// ListURLS godoc
+// @Summary List all URLs
+// @Description Get all URLs created by the authenticated user
+// @Tags URL
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router / [get]
 func (h *UrlHandler) ListURLS(c *gin.Context) {
 
 	userId := c.GetString("userID")
@@ -101,6 +123,20 @@ func (h *UrlHandler) ListURLS(c *gin.Context) {
 	})
 }
 
+// UpdateURL godoc
+// @Summary Update a short URL
+// @Description Update the original URL or expiry of an existing short code
+// @Tags URL
+// @Accept json
+// @Produce json
+// @Param shortCode path string true "Short Code"
+// @Param request body UpdateURLRequest true "Update details"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /{shortCode} [put]
 func (h *UrlHandler) UpdateURL(c *gin.Context) {
 
 	userId := c.GetString("userID")
@@ -161,6 +197,19 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 }
 
 
+// DeleteURL godoc
+// @Summary Delete a short URL
+// @Description Delete an existing short URL by its code
+// @Tags URL
+// @Accept json
+// @Produce json
+// @Param shortCode path string true "Short Code"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Security BearerAuth
+// @Router /{shortCode} [delete]
 func (h *UrlHandler) DeleteURL(c *gin.Context) {
 
 	userId := c.GetString("userID")

@@ -18,6 +18,17 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Redirection Engine API
+// @version 1.0
+// @description High-performance microservices-based URL redirection engine.
+
+// @contact.name API Support
+// @contact.email support@redirection.engine
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 // Load .env
 func LoadEnv() {
 	err := godotenv.Load()

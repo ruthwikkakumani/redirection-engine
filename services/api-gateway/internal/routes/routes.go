@@ -9,6 +9,9 @@ import (
 	"github.com/ruthwikkakumani/redirection-engine/services/api-gateway/internal/config"
 	"github.com/ruthwikkakumani/redirection-engine/services/api-gateway/internal/middleware"
 	"go.uber.org/zap"
+	_ "github.com/ruthwikkakumani/redirection-engine/services/api-gateway/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func newProxy(target string, logger *zap.Logger) *httputil.ReverseProxy {
@@ -55,11 +58,16 @@ func RegisterRoutes(r *gin.Engine, logger *zap.Logger) {
 
 	cfg := config.Load(logger)
 
+	// Swagger documentation - Only exposed in non-production environments
+	if config.GetEnv("ENV", "development") != "production" {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
 	authService := cfg.AuthServiceURL
 	urlService := cfg.URLServiceURL
 	redirectService := cfg.RedirectService
 	analyticsService := cfg.AnalyticsURL
-
+	
 	authProxy := newProxy(authService, logger)
 	urlProxy := newProxy(urlService, logger)
 	redirectProxy := newProxy(redirectService, logger)

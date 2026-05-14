@@ -1,0 +1,269 @@
+info:
+  contact: {}
+  description: Internal service for tracking and aggregating URL click telemetry.
+  title: Analytics Service API
+  version: "1.0"
+paths:
+  /{code}/browsers:
+    get:
+      consumes:
+      - application/json
+      description: Returns click breakdown by browser for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get browser breakdown
+      tags:
+      - Analytics
+  /{code}/cities:
+    get:
+      consumes:
+      - application/json
+      description: Returns click breakdown by city for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get city breakdown
+      tags:
+      - Analytics
+  /{code}/countries:
+    get:
+      consumes:
+      - application/json
+      description: Returns click breakdown by country for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get country breakdown
+      tags:
+      - Analytics
+  /{code}/devices:
+    get:
+      consumes:
+      - application/json
+      description: Returns click breakdown by device type for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get device breakdown
+      tags:
+      - Analytics
+  /{code}/os:
+    get:
+      consumes:
+      - application/json
+      description: Returns click breakdown by operating system for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get OS breakdown
+      tags:
+      - Analytics
+  /{code}/over-time:
+    get:
+      consumes:
+      - application/json
+      description: Returns time-series click data for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      - default: day
+        description: Interval (hour, day, week)
+        in: query
+        name: interval
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get time-series clicks
+      tags:
+      - Analytics
+  /{code}/peak-hours:
+    get:
+      consumes:
+      - application/json
+      description: Returns hourly traffic distribution (0–23) for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get peak hours
+      tags:
+      - Analytics
+  /{code}/recent:
+    get:
+      consumes:
+      - application/json
+      description: Returns recent click events for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get recent clicks
+      tags:
+      - Analytics
+  /{code}/summary:
+    get:
+      consumes:
+      - application/json
+      description: Returns total clicks and unique visitors for a short code
+      parameters:
+      - description: Short Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get URL summary
+      tags:
+      - Analytics
+swagger: "2.0"
