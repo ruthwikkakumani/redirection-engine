@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/cache"
-	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/redirect-service/internal/cache"
+	"github.com/ruthwikkakumani/redirection-engine/services/redirect-service/internal/repository"
 	"go.uber.org/zap"
 )
 

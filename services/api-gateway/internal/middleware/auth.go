@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/ruthwikkakumani/url-shortener/pkg/auth"
+	"github.com/ruthwikkakumani/redirection-engine/pkg/auth"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

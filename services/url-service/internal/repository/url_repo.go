@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/model"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/model"
 	"go.uber.org/zap"
 )
 
@@ -83,7 +83,7 @@ func (r *UrlRepo) ListURLS(userID string) ([]model.Url, error) {
 	return urls, nil
 }
 
-func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, expiresAt *time.Time) (error) {
+func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, newCode *string, expiresAt *time.Time) (error) {
 
 	setClauses := []string{}
 	args := []interface{}{}
@@ -96,6 +96,16 @@ func (r *UrlRepo) UpdateURL(userID string, originalURL *string, code string, exp
 		)
 
 		args = append(args, *originalURL)
+		argPos++
+	}
+
+	if newCode != nil {
+		setClauses = append(
+			setClauses,
+			fmt.Sprintf("short_code = $%d", argPos),
+		)
+
+		args = append(args, *newCode)
 		argPos++
 	}
 

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/config"
 )
 
 func getJWTKey() []byte {

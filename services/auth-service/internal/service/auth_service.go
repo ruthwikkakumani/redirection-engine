@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/model"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/model"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/repository"
 	"go.uber.org/zap"
 )
 

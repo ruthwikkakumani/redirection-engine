@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/model"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/model"
 	"go.uber.org/zap"
 )
 

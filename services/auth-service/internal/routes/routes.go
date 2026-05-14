@@ -3,9 +3,9 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/handler"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/repository"
-	"github.com/ruthwikkakumani/url-shortener/services/auth-service/internal/service"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/handler"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/auth-service/internal/service"
 	"go.uber.org/zap"
 )
 

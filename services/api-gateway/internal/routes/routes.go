@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ruthwikkakumani/url-shortener/services/api-gateway/internal/config"
-	"github.com/ruthwikkakumani/url-shortener/services/api-gateway/internal/middleware"
+	"github.com/ruthwikkakumani/redirection-engine/services/api-gateway/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/api-gateway/internal/middleware"
 	"go.uber.org/zap"
 )
 

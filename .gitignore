@@ -1,6 +1,8 @@
 # Binaries
 bin/
 *.out
+main
+**/main
 
 # Logs
 *.log

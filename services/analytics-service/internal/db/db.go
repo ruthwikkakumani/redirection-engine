@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/config"
 	"go.uber.org/zap"
 )
 

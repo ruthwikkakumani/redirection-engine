@@ -3,49 +3,64 @@ package service
 import (
 	"time"
 
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/model"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/repository"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/utils"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/model"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/utils"
 	"go.uber.org/zap"
 )
 
 type UrlService struct {
 	logger *zap.Logger
-	repo *repository.UrlRepo
+	repo   *repository.UrlRepo
 }
 
-func NewUrlService(logger *zap.Logger, repo *repository.UrlRepo) (*UrlService) {
+func NewUrlService(logger *zap.Logger, repo *repository.UrlRepo) *UrlService {
 	return &UrlService{
 		logger: logger,
-		repo: repo,
+		repo:   repo,
 	}
 }
 
-func (s *UrlService) CreateShortURL(userId string, url string, expiryMinutes int) (string, error) {
-	
-	code, err := s.generateUniqueShortCode()
-	if err != nil {
-		s.logger.Error("unable to generate short code",
-			zap.Error(err),
-		)
-		
-		return "", err
+func (s *UrlService) CreateShortURL(userId string, url string, expiryMinutes int, customCode *string) (string, error) {
+	var code string
+	var err error
+
+	if customCode != nil && *customCode != "" {
+		code = *customCode
+		if !utils.IsValidShortCode(code) {
+			return "", utils.NewError("invalid short code format")
+		}
+		exists, err := s.repo.ShortCodeExists(code)
+		if err != nil {
+			return "", err
+		}
+		if exists {
+			return "", utils.NewError("short code already in use")
+		}
+	} else {
+		code, err = s.generateUniqueShortCode()
+		if err != nil {
+			s.logger.Error("unable to generate short code",
+				zap.Error(err),
+			)
+			return "", err
+		}
 	}
-	
+
 	var expiresAt *time.Time
 	if expiryMinutes > 0 {
 		t := time.Now().Add(time.Duration(expiryMinutes) * time.Minute)
 		expiresAt = &t
 	}
-	
+
 	if err := s.repo.CreateURL(userId, url, code, expiresAt); err != nil {
 		s.logger.Error("unable to store data in db",
 			zap.Error(err),
 		)
-		
+
 		return "", err
 	}
-	
+
 	return code, nil
 }
 
@@ -83,15 +98,30 @@ func (s *UrlService) ListURLS(userId string) ([]model.Url, error) {
 	return urls, nil
 }
 
-func (s *UrlService) UpdateURL(userId string, originalURL *string, code string, expiryMinutes *int) (string, error) {
-	
+func (s *UrlService) UpdateURL(userId string, originalURL *string, code string, newCode *string, expiryMinutes *int) (string, error) {
+
+	var finalCode = code
+	if newCode != nil && *newCode != "" && *newCode != code {
+		if !utils.IsValidShortCode(*newCode) {
+			return "", utils.NewError("invalid short code format")
+		}
+		exists, err := s.repo.ShortCodeExists(*newCode)
+		if err != nil {
+			return "", err
+		}
+		if exists {
+			return "", utils.NewError("short code already in use")
+		}
+		finalCode = *newCode
+	}
+
 	var expiresAt *time.Time
 	if expiryMinutes != nil {
 		t := time.Now().Add(time.Duration(*expiryMinutes) * time.Minute)
 		expiresAt = &t
 	}
 
-	if err := s.repo.UpdateURL(userId, originalURL, code, expiresAt); err != nil {
+	if err := s.repo.UpdateURL(userId, originalURL, code, newCode, expiresAt); err != nil {
 		s.logger.Error("unable to update data in db",
 			zap.Error(err),
 		)
@@ -99,10 +129,10 @@ func (s *UrlService) UpdateURL(userId string, originalURL *string, code string, 
 		return "", err
 	}
 
-	return code, nil
+	return finalCode, nil
 }
 
-func (s *UrlService) DeleteURL(userId string, shortCode string) (error) {
+func (s *UrlService) DeleteURL(userId string, shortCode string) error {
 
 	if err := s.repo.DeleteURL(userId, shortCode); err != nil {
 		s.logger.Error("unable to delete data in db",

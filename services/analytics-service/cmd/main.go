@@ -12,13 +12,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/ruthwikkakumani/url-shortener/pkg/logger"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/config"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/db"
-	kafkaconsumer "github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/kafka"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/middleware"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/repository"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/routes"
+	"github.com/ruthwikkakumani/redirection-engine/pkg/logger"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/db"
+	kafkaconsumer "github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/kafka"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/middleware"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/routes"
 	"go.uber.org/zap"
 )
 

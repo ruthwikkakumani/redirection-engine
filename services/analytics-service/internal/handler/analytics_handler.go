@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/service"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/service"
 	"go.uber.org/zap"
 )
 

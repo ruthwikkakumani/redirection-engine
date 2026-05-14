@@ -1,6 +1,4 @@
 services:
-
-  # ── Infrastructure ─────────────────────────────────────────────────────────
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
@@ -25,14 +23,13 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     restart: unless-stopped
 
-  # ── Application Services ───────────────────────────────────────────────────
   api-gateway:
     image: ruthwikkakumani/api-gateway:latest
     container_name: api-gateway
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       - ENV=${ENV}
       - PORT=${PORT}
@@ -47,6 +44,20 @@ services:
       - redirect-service
       - analytics-service
     restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api-gateway
 
   auth-service:
     image: ruthwikkakumani/auth-service:latest
@@ -101,3 +112,7 @@ services:
     depends_on:
       - kafka
     restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

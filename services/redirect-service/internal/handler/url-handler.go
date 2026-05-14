@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/kafka"
-	"github.com/ruthwikkakumani/url-shortener/services/redirect-service/internal/service"
+	"github.com/ruthwikkakumani/redirection-engine/services/redirect-service/internal/kafka"
+	"github.com/ruthwikkakumani/redirection-engine/services/redirect-service/internal/service"
 	"go.uber.org/zap"
 )
 

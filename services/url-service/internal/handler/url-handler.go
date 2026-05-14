@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/config"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/service"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/service"
 	"go.uber.org/zap"
 )
 
@@ -15,13 +15,15 @@ type UrlHandler struct {
 }
 
 type ShortenURLRequest struct {
-	OriginalURL   string `json:"original_url" binding:"required,url"`
-	ExpiryMinutes int    `json:"expiry_minutes" binding:"omitempty,gte=1,lte=10080"`
+	OriginalURL   string  `json:"original_url" binding:"required"`
+	ExpiryMinutes *int    `json:"expiry_minutes" binding:"omitempty,gte=1,lte=43200"`
+	CustomCode    *string `json:"custom_code" binding:"omitempty,min=3,max=20"`
 }
 
 type UpdateURLRequest struct {
-	OriginalURL   *string `json:"original_url" binding:"omitempty,url"`
-	ExpiryMinutes *int    `json:"expiry_minutes" binding:"omitempty,gte=1,lte=10080"`
+	OriginalURL   *string `json:"original_url" binding:"omitempty"`
+	ExpiryMinutes *int    `json:"expiry_minutes" binding:"omitempty,gte=1,lte=43200"`
+	CustomCode    *string `json:"custom_code" binding:"omitempty,min=3,max=20"`
 }
 
 func NewUrlHandler(logger *zap.Logger, service *service.UrlService) *UrlHandler {
@@ -48,9 +50,21 @@ func (h *UrlHandler) ShortenURL(c *gin.Context) {
 		return
 	}
 
-	code, err := h.service.CreateShortURL(userId, req.OriginalURL, req.ExpiryMinutes)
+	expiry := 0
+	if req.ExpiryMinutes != nil {
+		expiry = *req.ExpiryMinutes
+	}
+
+	code, err := h.service.CreateShortURL(userId, req.OriginalURL, expiry, req.CustomCode)
 	if err != nil {
 		h.logger.Error("failed to create short url", zap.Error(err))
+
+		if err.Error() == "short code already in use" || err.Error() == "invalid short code format" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
@@ -113,15 +127,22 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 		return
 	}
 
-	code := c.Param("shortCode")
+	shortCode := c.Param("shortCode")
 
-	code, err := h.service.UpdateURL(userId, req.OriginalURL, code, req.ExpiryMinutes)
+	updatedCode, err := h.service.UpdateURL(userId, req.OriginalURL, shortCode, req.CustomCode, req.ExpiryMinutes)
 	if err != nil {
 		h.logger.Error("failed to update url", zap.Error(err))
 
 		if err.Error() == "url not found" {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "url not found",
+			})
+			return
+		}
+
+		if err.Error() == "short code already in use" || err.Error() == "invalid short code format" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
 			})
 			return
 		}
@@ -135,7 +156,7 @@ func (h *UrlHandler) UpdateURL(c *gin.Context) {
 	base := config.GetEnv("BASE_URL", "http://localhost:8082")
 
 	c.JSON(http.StatusOK, gin.H{
-		"short_url": base + "/r/" + code,
+		"short_url": base + "/r/" + updatedCode,
 	})
 }
 

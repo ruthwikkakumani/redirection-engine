@@ -12,11 +12,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/ruthwikkakumani/url-shortener/pkg/logger"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/config"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/db"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/middleware"
-	"github.com/ruthwikkakumani/url-shortener/services/url-service/internal/routes"
+	"github.com/ruthwikkakumani/redirection-engine/pkg/logger"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/config"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/db"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/middleware"
+	"github.com/ruthwikkakumani/redirection-engine/services/url-service/internal/routes"
 	"go.uber.org/zap"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ruthwikkakumani/url-shortener/services/analytics-service/internal/repository"
+	"github.com/ruthwikkakumani/redirection-engine/services/analytics-service/internal/repository"
 	"go.uber.org/zap"
 )
 
